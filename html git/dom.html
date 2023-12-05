@@ -1,0 +1,29 @@
+<html>
+<body>
+
+<h1>The Document Object</h1>
+<h2>The getElementsByTagName() Method</h2>
+
+<p>An unordered list:</p>
+<ul>
+  <li>Coffee</li>
+  <li>Tea</li>
+  <li>Milk</li>
+</ul>
+
+<p>The innerHTML of the second li element is:</p>
+<p id="demo"></p>
+
+<h1 class="h1">HELLOOO</h1>
+
+<p class="p1" name="gm">GOODMORNING</p1>
+
+<script>
+collection = document.getElementsByTagName("li");
+document.getElementById("demo").innerHTML = collection[2].innerHTML;
+document.getElementsByClassName("p1")[0].style.color="green";
+document.getElementsByTagName("h1")[0].style.color="red";
+</script>
+
+</body>
+</html>
