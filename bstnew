@@ -159,16 +159,16 @@ void postorderTraversal(struct Node* root) {
     }
 }
 
-void printTreeStructure(struct Node* root, int level) {
-    if (root != NULL) {
-        printTreeStructure(root->right, level + 1);
-        for (int i = 0; i < level; i++) {
-            printf("\t");
-        }
-        printf("%d\n", root->key);
-        printTreeStructure(root->left, level + 1);
-    }
-}
+// void printTreeStructure(struct Node* root, int level) {
+//     if (root != NULL) {
+//         printTreeStructure(root->right, level + 1);
+//         for (int i = 0; i < level; i++) {
+//             printf("\t");
+//         }
+//         printf("%d\n", root->key);
+//         printTreeStructure(root->left, level + 1);
+//     }
+// }
 
 void freeEntireTree(struct Node* root) {
     if (root != NULL) {
@@ -197,7 +197,7 @@ int main() {
         printf("1. Inorder Traversal\n2. Preorder Traversal\n3. Postorder Traversal\n");
         printf("4. Delete Node\n5. Insert Node\n6. Search Node\n");
         printf("7. Find Predecessor\n8. Find Successor\n");
-        printf("9. Print Tree Structure\n0. Exit\n");
+        printf("0. Exit\n");
 
         scanf("%d", &choice);
 
@@ -268,10 +268,10 @@ int main() {
                 }
                 break;
 
-            case 9:
-                printf("Tree Structure:\n");
-                printTreeStructure(root, 0);
-                break;
+            // case 9:
+            //     printf("Tree Structure:\n");
+            //     printTreeStructure(root, 0);
+            //     break;
 
             case 0:
                 printf("Exiting the program.\n");
