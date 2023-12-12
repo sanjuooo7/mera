@@ -1,0 +1,292 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int key;
+    struct Node* left;
+    struct Node* right;
+};
+
+struct Node* createNode(int key) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->key = key;
+    newNode->left = newNode->right = NULL;
+    return newNode;
+}
+
+struct Node* insert(struct Node* root, int key) {
+    if (root == NULL) {
+        return createNode(key);
+    }
+
+    if (key < root->key) {
+        root->left = insert(root->left, key);
+    } else if (key > root->key) {
+        root->right = insert(root->right, key);
+    }
+
+    return root;
+}
+
+struct Node* findMin(struct Node* root) {
+    while (root->left != NULL) {
+        root = root->left;
+    }
+    return root;
+}
+
+struct Node* deleteNode(struct Node* root, int key) {
+    if (root == NULL) {
+        return root;
+    }
+
+    if (key < root->key) {
+        root->left = deleteNode(root->left, key);
+    } else if (key > root->key) {
+        root->right = deleteNode(root->right, key);
+    } else {
+        if (root->left == NULL) {
+            struct Node* temp = root->right;
+            free(root);
+            return temp;
+        } else if (root->right == NULL) {
+            struct Node* temp = root->left;
+            free(root);
+            return temp;
+        }
+
+        struct Node* temp = findMin(root->right);
+        root->key = temp->key;
+        root->right = deleteNode(root->right, temp->key);
+    }
+
+    return root;
+}
+
+struct Node* search(struct Node* root, int key) {
+    if (root == NULL || root->key == key) {
+        return root;
+    }
+
+    if (key < root->key) {
+        return search(root->left, key);
+    }
+
+    return search(root->right, key);
+}
+
+struct Node* findPredecessor(struct Node* root, int key) {
+    struct Node* current = search(root, key);
+    if (current == NULL) {
+        return NULL;
+    }
+
+    // If the left subtree of the current node is not empty,
+    // the predecessor is the maximum value in the left subtree
+    if (current->left != NULL) {
+        return findMin(current->left);
+    }
+
+    // If the left subtree is empty, the predecessor is the
+    // nearest ancestor for which the current node is in the
+    // right subtree
+    struct Node* predecessor = NULL;
+    while (root != NULL) {
+        if (current->key > root->key) {
+            predecessor = root;
+            root = root->right;
+        } else if (current->key < root->key) {
+            root = root->left;
+        } else {
+            break;
+        }
+    }
+
+    return predecessor;
+}
+
+struct Node* findSuccessor(struct Node* root, int key) {
+    struct Node* current = search(root, key);
+    if (current == NULL) {
+        return NULL;
+    }
+
+    // If the right subtree of the current node is not empty,
+    // the successor is the minimum value in the right subtree
+    if (current->right != NULL) {
+        return findMin(current->right);
+    }
+
+    // If the right subtree is empty, the successor is the
+    // nearest ancestor for which the current node is in the
+    // left subtree
+    struct Node* successor = NULL;
+    while (root != NULL) {
+        if (current->key < root->key) {
+            successor = root;
+            root = root->left;
+        } else if (current->key > root->key) {
+            root = root->right;
+        } else {
+            break;
+        }
+    }
+
+    return successor;
+}
+
+void inorderTraversal(struct Node* root) {
+    if (root != NULL) {
+        inorderTraversal(root->left);
+        printf("%d ", root->key);
+        inorderTraversal(root->right);
+    }
+}
+
+void preorderTraversal(struct Node* root) {
+    if (root != NULL) {
+        printf("%d ", root->key);
+        preorderTraversal(root->left);
+        preorderTraversal(root->right);
+    }
+}
+
+void postorderTraversal(struct Node* root) {
+    if (root != NULL) {
+        postorderTraversal(root->left);
+        postorderTraversal(root->right);
+        printf("%d ", root->key);
+    }
+}
+
+void printTreeStructure(struct Node* root, int level) {
+    if (root != NULL) {
+        printTreeStructure(root->right, level + 1);
+        for (int i = 0; i < level; i++) {
+            printf("\t");
+        }
+        printf("%d\n", root->key);
+        printTreeStructure(root->left, level + 1);
+    }
+}
+
+void freeEntireTree(struct Node* root) {
+    if (root != NULL) {
+        freeEntireTree(root->left);
+        freeEntireTree(root->right);
+        free(root);
+    }
+}
+
+int main() {
+    struct Node* root = NULL;
+    int n, key, deleteKey, insertKey, searchKey;
+    int choice;
+
+    printf("Enter the number of elements: ");
+    scanf("%d", &n);
+
+    printf("Enter the elements:\n");
+    for (int i = 0; i < n; ++i) {
+        scanf("%d", &key);
+        root = insert(root, key);
+    }
+
+    while (1) {
+        printf("\nChoose operation:\n");
+        printf("1. Inorder Traversal\n2. Preorder Traversal\n3. Postorder Traversal\n");
+        printf("4. Delete Node\n5. Insert Node\n6. Search Node\n");
+        printf("7. Find Predecessor\n8. Find Successor\n");
+        printf("9. Print Tree Structure\n0. Exit\n");
+
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Inorder traversal: ");
+                inorderTraversal(root);
+                break;
+
+            case 2:
+                printf("Preorder traversal: ");
+                preorderTraversal(root);
+                break;
+
+            case 3:
+                printf("Postorder traversal: ");
+                postorderTraversal(root);
+                break;
+
+            case 4:
+                printf("Enter the key to delete: ");
+                scanf("%d", &deleteKey);
+                root = deleteNode(root, deleteKey);
+                printf("Inorder traversal after deletion: ");
+                inorderTraversal(root);
+                break;
+
+            case 5:
+                printf("Enter the key to insert: ");
+                scanf("%d", &insertKey);
+                root = insert(root, insertKey);
+                printf("Inorder traversal after insertion: ");
+                inorderTraversal(root);
+                break;
+
+            case 6:
+                printf("Enter the key to search: ");
+                scanf("%d", &searchKey);
+                struct Node* searchResult = search(root,
+
+ searchKey);
+                if (searchResult != NULL) {
+                    printf("Node with key %d found in the tree.\n", searchKey);
+                } else {
+                    printf("Node with key %d not found in the tree.\n", searchKey);
+                }
+                break;
+
+            case 7:
+                printf("Enter the key to find predecessor: ");
+                scanf("%d", &searchKey);
+                struct Node* pred = findPredecessor(root, searchKey);
+                if (pred != NULL) {
+                    printf("Predecessor: %d\n", pred->key);
+                } else {
+                    printf("No predecessor found.\n");
+                }
+                break;
+
+            case 8:
+                printf("Enter the key to find successor: ");
+                scanf("%d", &searchKey);
+                struct Node* succ = findSuccessor(root, searchKey);
+                if (succ != NULL) {
+                    printf("Successor: %d\n", succ->key);
+                } else {
+                    printf("No successor found.\n");
+                }
+                break;
+
+            case 9:
+                printf("Tree Structure:\n");
+                printTreeStructure(root, 0);
+                break;
+
+            case 0:
+                printf("Exiting the program.\n");
+                // Free memory for the entire tree before exiting
+                freeEntireTree(root);
+                break;
+
+            default:
+                printf("Invalid choice\n");
+        }
+
+        if (choice == 0) {
+            break;
+        }
+    }
+
+    return 0;
+}
